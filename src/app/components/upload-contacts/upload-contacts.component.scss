@@ -1,0 +1,347 @@
+.dialog-container{
+  padding: 0;
+  max-width: 800px;
+
+  .f-22 {
+    font-size: 22px;
+  }
+
+  @media screen and (max-width: 576px) {
+    .dup-notification-text {
+      display: inline-block;
+    }
+  }
+
+  .close-button {
+    width: auto;
+    padding: 0;
+
+    &:focus, &:hover {
+      color: #000000;
+      background-color: transparent;
+    }
+
+    .i-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .table {
+    td {
+      padding: 10px;
+    }
+
+    .note {
+      width: 150px;
+    }
+
+    @media screen and (max-width: 576px) {
+      .crmgrow-property {
+        select {
+          width: 140px;
+        }
+      }
+    }
+  }
+  .round-check {
+    background-color: #00916E;
+  }
+
+  .download-button {
+    width: 150px;
+  }
+
+  .no-cvs {
+    background-color: #F9FAFB;
+  }
+}
+
+
+.custom-control {
+  display: flex;
+
+  label {
+    text-align: left;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #0000ff;
+    font-weight: bold;
+  }
+}
+
+
+.example-data {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 24px;
+  white-space: nowrap;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.duplicate-check-table {
+  .sticky-action-col {
+    position: absolute;
+    width: 90px;
+    right: 10px;
+    border-left: 2px solid #e9ecef;
+  }
+}
+
+.duplicate-wrapper {
+  max-height: 60vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  white-space: nowrap;
+
+  .merge-group-wrapper {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+  }
+
+  .table-wrapper {
+    width: calc(100% - 130px);
+    overflow: auto;
+    margin-left: 40px;
+  }
+
+  .duplicate-check-table {
+    thead .sticky-action-col {
+      opacity: 1;
+    }
+
+    tbody {
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .sticky-check-col {
+      position: absolute;
+      width: 40px;
+      left: 0;
+      border-right: 2px solid #e9ecef;
+      padding: 12px 10px;
+    }
+
+    .sticky-action-col {
+      position: absolute;
+      width: 90px;
+      right: 10px;
+      border-left: 2px solid #e9ecef;
+    }
+
+    .last-field {
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    td, th {
+      padding: 15px 10px;
+      height: 50px;
+    }
+  }
+
+  &.invalid-wrapper {
+    .table-wrapper {
+      width: calc(100% - 40px);
+      margin-left: 0;
+    }
+
+    .duplicate-check-table {
+      .sticky-action-col {
+        border: none;
+        right: 0;
+      }
+    }
+
+  }
+
+  .duplicate-error {
+    margin-left: 40px;
+  }
+
+  @media screen and (max-width: 576px) {
+    .duplicate-error {
+      margin-left: 40px;
+      width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-all;
+    }
+  }
+}
+
+.review-container {
+  width: 100%;
+  max-height: 60vh;
+  overflow: auto;
+
+  .review-table {
+    td, th {
+      height: 50px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.invalid-wrapper {
+  .table-wrapper {
+    overflow: auto;
+    .edit-contact-button {
+      opacity: 0;
+    }
+    tr:hover {
+      .edit-contact-button {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+
+.template-screenshot {
+  width: 100%;
+}
+
+.upload-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+
+
+  .upload-input-area {
+    position: absolute;
+    width: 100%;
+    height: 200px;
+    border: 1px dashed #0000ff;
+    border-radius: 3px;
+
+    p{
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      line-height: 170px;
+      color: #0000ff;
+      font-family: Arial;
+    }
+    input{
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      opacity: 0;
+      left: 0;
+      top: 0;
+    }
+  }
+}
+
+.upload-progress-wrapper {
+  position: relative;
+  width: 250px;
+  height: 250px;
+}
+
+.glass-img {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  left: 80px;
+  top: 125px;
+  object-fit: contain;
+}
+
+.checking-img {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  margin: 0px auto;
+}
+
+.attention {
+  max-width: 500px;
+  margin: auto;
+  background-color: #fffbfb;
+  border: 2px solid #e87b7c;
+  border-radius: 8px;
+
+  .attention-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+}
+
+
+.column-file {
+  width: 185px;
+}
+.preview {
+  max-width: 180px;
+}
+
+.selected-option-text {
+  color: #0000ff;
+}
+
+:host ::ng-deep {
+  .duplicate-check-table {
+
+    .radio-cell {
+      .custom-radio:checked, .custom-radio:not(:checked) {
+        position: relative;
+        left: 0;
+      }
+
+      .custom-control-input:checked ~ .custom-control-label::before {
+        border-color: #0000ff;
+        background-color: #ffffff;
+        left: 60px;
+      }
+
+      .custom-control label {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .custom-radio .custom-control-label::before {
+        border-radius: 50%;
+        left: 60px;
+      }
+
+      .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
+        background-image: none;
+        background-color: #0000ff;
+        border-radius: 50%;
+        left: 64px;
+      }
+
+      .custom-control-label::after {
+        top: 0.4rem;
+        left: 64px;
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+    }
+  }
+
+  .mat-select {
+    border: 1px solid #aaa;
+    padding: 10px 12px;
+    border-radius: 5px;
+  }
+
+  .mat-select-value-text {
+    color: #000;
+    font-weight: bold;
+  }
+
+  mat-pseudo-checkbox {
+    background-color: #0000ff;
+  }
+}
+

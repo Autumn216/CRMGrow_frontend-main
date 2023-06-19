@@ -1,0 +1,235 @@
+<script src="../materials/materials.component.ts"></script>
+<script src="automations.component.ts"></script>
+<div class="page-content">
+  <div class="v-center justify-content-between mb-3">
+    <h1 class="page-title">Automations</h1>
+    <button type="button" class="btn btn-primary shadow"
+        (click)="create()"
+        [class.disable]="!isPackageAutomation"
+    >
+      <span class="f-6 font-weight-bold">New Automation</span>
+    </button>
+  </div>
+  <div class="v-center">
+    <div class="form-group mb-0 search-form">
+      <div class="input-group-prepend">
+        <i class="i-icon i-search d-block bgc-dark"></i>
+      </div>
+      <input type="text" class="form-control" placeholder="Search" aria-label="search" aria-describedby="search-addon"
+             [(ngModel)]="searchStr"
+             (ngModelChange)="changeSearchStr()"
+             [class.disabled]="(automationService.loading$ | async) === STATUS.REQUEST || !isPackageAutomation"
+      >
+      <ng-container *ngIf="searchStr">
+        <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+          <i class="i-icon i-close d-block bgc-dark"></i>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="my-3 position-relative">
+    <div class="mat-table-wrapper" [class.empty]="!filteredResult.length">
+      <div class="updating-status" *ngIf="automations.length && (automationService.loading$ | async) === STATUS.REQUEST">
+        LOADING
+      </div>
+      <table
+        mat-table
+        class="table automation-table page-table"
+        [class.disable]="!isPackageAutomation"
+        multiTemplateDataRows
+        [dataSource]="filteredResult | paginate: {itemsPerPage: pageSize.id, currentPage: page, id: 'automationTable', total: filteredResult.length}"
+      >
+
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef class="title">
+            <div class="v-center c-pointer head-sort" (click)="sort('title')">
+              <span [class]="selectedSort == 'title' ? 'font-weight-bold c-dark' : ''">Title</span>
+              <i class="i-icon d-block bgc-black ml-2"
+                 [class]="searchCondition.title ? 'i-sort-down' : 'i-sort-up'" *ngIf="selectedSort == 'title'"></i>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let automation" class="title">
+            <a  [routerLink]="['/autoflow/edit/' + automation._id]" class="td-none"><span class="f-3 font-weight-bold">{{automation.title}}</span></a>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="owner">
+          <th mat-header-cell *matHeaderCellDef class="auth">
+            <div class="v-center c-pointer head-sort" (click)="sort('role')">
+              <span [class]="selectedSort == 'role' ? 'font-weight-bold c-dark' : ''">Owner</span>
+              <i class="i-icon d-block bgc-black ml-2"
+                 [class]="searchCondition.role ? 'i-sort-down' : 'i-sort-up'" *ngIf="selectedSort == 'role'"></i>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let automation" class="auth">
+            <div class="role" [class.admin]="automation.role == 'admin'" [class.team]="automation.role === 'team' && automation.user === userId" [class.shared]="automation.role === 'team' && automation.user !== userId"></div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="action-count">
+          <th mat-header-cell *matHeaderCellDef class="action-count">Actions</th>
+          <td mat-cell *matCellDef="let automation" class="action-count">
+            <div class="f-3">{{automation.automations && automation.automations.length}}</div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="contacts">
+          <th mat-header-cell *matHeaderCellDef class="contacts">Contacts</th>
+          <td mat-cell *matCellDef="let automation" class="contacts">
+            <div class="f-3">{{automation.contacts}}</div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="created">
+          <th mat-header-cell *matHeaderCellDef class="created">
+            <div class="v-center justify-content-end c-pointer head-sort" (click)="sort('created_at')">
+              <span [class]="selectedSort == 'created_at' ? 'font-weight-bold c-dark' : ''">Added</span>
+              <i class="i-icon d-block bgc-black ml-2"
+                 [class]="searchCondition.created_at ? 'i-sort-down' : 'i-sort-up'" *ngIf="selectedSort == 'created_at'"></i>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let automation" class="created">
+            <div class="f-3">{{automation.created_at | date: 'MM/dd/yyyy'}}</div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="assign">
+          <th mat-header-cell *matHeaderCellDef class="assign-action"></th>
+          <td mat-cell *matCellDef="let automation" class="assign-action">
+            <div class="v-center justify-content-around">
+              <button class="v-center btn p-1 c-dark" (click)="assignAutomation($event, automation)"
+                placement="bottom" ngbTooltip="Assign contact"
+              >
+                <i class="i-icon i-next d-block bgc-dark" aria-hidden="true"></i>
+              </button>
+              <ng-container *ngIf="automation.role !== 'admin' && automation.user == userId; else otherRoleTemplate">
+                <button class="v-center btn p-1 c-dark" (click)="openAutomation($event, automation)"
+                  placement="bottom" ngbTooltip="Edit"
+                >
+                  <i class="i-icon i-edit d-block bgc-dark" aria-hidden="true"></i>
+                </button>
+              </ng-container>
+              <ng-template #otherRoleTemplate>
+                <button class="v-center btn p-1 c-dark" (click)="duplicate($event, automation)"
+                  placement="bottom" ngbTooltip="Clone"
+                >
+                  <i class="i-icon i-duplicate d-block bgc-dark" aria-hidden="true"></i>
+                </button>
+              </ng-template>
+              <ng-container *ngIf="automation.user == userId">
+                <button class="v-center btn p-1 c-dark" (click)="shareAutomation($event, automation)"
+                  placement="bottom" ngbTooltip="Share Team"
+                >
+                  <i class="i-icon i-share-team d-block bgc-dark" aria-hidden="true"></i>
+                </button>
+              </ng-container>
+              <ng-container *ngIf="automation.role !== 'admin' && automation.user == userId">
+                <button class="v-center btn p-1 c-dark" (click)="deleteAutomation($event, automation)"
+                  placement="bottom" ngbTooltip="Delete"
+                >
+                  <i class="i-icon i-trash bgc-dark" aria-hidden="true"></i>
+                </button>
+              </ng-container>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="DISPLAY_COLUMNS.length">
+            <div class="automation-detail"
+                  [@detailExpand]="element._id == selectedAutomation ? 'expanded' : 'collapsed'">
+              <ng-container *ngIf="detailLoading; else contactsList">
+                <div class="loader"></div>
+                <div class="text-center f-8 font-weight-bold">
+                  Loading the assigned contacts
+                </div>
+              </ng-container>
+              <ng-template #contactsList>
+                <h5 class="font-weight-bold border-bottom pb-2">Assigned Contacts</h5>
+                <div class="chip d-flex p-1 contact-chip c-pointer" *ngFor="let contact of contacts">
+                  <div class="form-avatar rounded-circle bg-dark mr-1">{{contact.avatarName}}</div>
+                  <div class="info">
+                    <div class="f-5 font-weight-bold">{{contact.fullName}}</div>
+                    <div class="f-2">{{contact.email}}</div>
+                    <div class="f-2">{{contact.cell_phone}}</div>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="DISPLAY_COLUMNS"></tr>
+        <tr mat-row *matRowDef="let element; columns: DISPLAY_COLUMNS;"
+            class="example-element-row"
+            [class.example-expanded-row]="selectedAutomation === element._id">
+        </tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="automation-detail-row"></tr>
+      </table>
+    </div>
+    <ng-container *ngIf="filteredResult.length">
+      <div class="my-2 table-control mode-1" [class.disable]="!isPackageAutomation">
+        <div class="pagination-wrapper m-auto">
+          <pagination-controls
+            (pageChange)="page = $event"
+            (pageBoundsCorrection)="page = $event"
+            id="automationTable"
+            maxSize="5"
+            previousLabel=""
+            nextLabel="">
+          </pagination-controls>
+        </div>
+        <div class="shadow-dropdown ml-auto page-size-control"
+          ngbDropdown
+          placement="top-right">
+          <div class="v-center c-pointer f-3 p-3 font-weight-bold"
+            ngbDropdownToggle>
+            <span class="pr-2 c-blue">Show {{pageSize.id}} rows per page</span>
+          </div>
+          <div ngbDropdownMenu
+            aria-labelledby="contactPageSize">
+            <div class="py-2"
+              ngbDropdownItem
+              *ngFor="let type of PAGE_COUNTS"
+              (click)="changePageSize(type)">
+              <span class="f-3 v-center"
+                [class.font-weight-bold]="type.id === pageSize.id">
+                Show {{type.label}} rows per page
+                <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                  *ngIf="type.id === pageSize.id"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!(automationService.automations$ | async).length; else showingStatusTemplate">
+      <ng-container [ngSwitch]="(automationService.loading$ | async)">
+        <div class="empty-list" *ngSwitchCase="STATUS.SUCCESS">
+          <div class="object-icon v-center">
+            <i class="i-icon i-automation d-block bgc-dark"></i>
+          </div>
+          <h4 class="font-weight-bold mt-4 mb-3">
+            There is no automations.
+          </h4>
+          <p class="mb-4">Please create automation to recruite automatically.</p>
+          <a class="btn btn-primary" [routerLink]="['/autoflow/new']">
+            <span class="font-weight-bold f-3">Create Automation</span>
+          </a>
+        </div>
+        <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+          <div class="loader mt-5 lg"></div>
+          <h4 class="fw-600 mt-2">Loading automations for auto-recruiting...</h4>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-template #showingStatusTemplate>
+      <ng-container *ngIf="!filteredResult.length">
+        <div class="empty-list py-5">
+          <div class="object-icon v-center">
+            <i class="i-icon i-automation d-block bgc-dark"></i>
+          </div>
+          <h4 class="font-weight-bold text-center mt-4 mb-3">
+            There is no automations to match your filter conditions.
+          </h4>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>
+

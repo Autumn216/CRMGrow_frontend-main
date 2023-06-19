@@ -1,0 +1,53 @@
+<div class="page-content">
+  <h1 class="page-title mb-3 mb-sm-4">Settings</h1>
+  <div class="sub-sidebar-mobile mb-2">
+    <div ngbDropdown class="sidebar-menu p-2">
+      <div ngbDropdownToggle class="v-center">
+        <i class="i-icon bgc-blue {{currentPageItem[0].icon}} mr-2"></i>
+        <span class="f-3 menu-label font-weight-bold c-blue">{{currentPageItem[0].label | translate}}</span>
+      </div>
+      <div ngbDropdownMenu class="light">
+        <div *ngFor="let menuItem of menuItems" class="dropdown-item">
+          <a class="d-flex nav-link c-dark c-pointer px-0" (click)="changeMenu(menuItem)">
+            <i class="i-icon bgc-dark {{menuItem.icon}} mr-2"></i>
+            <span class="f-3 menu-label font-weight-bold">{{menuItem.label | translate}}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex">
+    <div class="sub-sidebar">
+      <ul class="m-0 p-0">
+        <ng-container *ngFor="let menuItem of menuItems" class="nav-item">
+          <li>
+            <a class="d-flex nav-link c-dark c-pointer px-0 {{menuItem.id}}"
+               [class.disable]="isDisableItem(menuItem)"
+               [ngClass]="{active: currentPage === menuItem.id}"
+               (click)="changeMenu(menuItem)"
+            >
+              <i class="i-icon bgc-dark {{menuItem.icon}} mr-2"></i>
+              <span class="f-3 menu-label font-weight-bold">{{menuItem.label | translate}}</span>
+            </a>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+    <div class="sub-container pl-0 pl-sm-4 flex-grow-1">
+      <ng-container [ngSwitch]="currentPage">
+        <app-notifications *ngSwitchCase="'notifications'"></app-notifications>
+        <app-sms-limits *ngSwitchCase="'sms-limits'"></app-sms-limits>
+        <app-affiliate *ngSwitchCase="'affiliate'"></app-affiliate>
+        <app-assistant *ngSwitchCase="'assistant'"></app-assistant>
+        <app-lead-capture *ngSwitchCase="'lead-capture'"></app-lead-capture>
+        <app-tag-manager *ngSwitchCase="'tag-manager'"></app-tag-manager>
+        <app-status-automation *ngSwitchCase="'status-automation'"></app-status-automation>
+        <app-auto-follow-up *ngSwitchCase="'auto-follow-up'"></app-auto-follow-up>
+        <app-auto-resend-video *ngSwitchCase="'auto-resend-video'"></app-auto-resend-video>
+        <app-deals-setting *ngSwitchCase="'deals-setting'"></app-deals-setting>
+        <app-integration *ngSwitchCase="'integration'"></app-integration>
+        <app-social-profile *ngSwitchCase="'social'"></app-social-profile>
+      </ng-container>
+    </div>
+  </div>
+</div>

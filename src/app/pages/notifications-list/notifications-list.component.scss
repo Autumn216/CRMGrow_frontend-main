@@ -1,0 +1,104 @@
+.notification-item > .icon {
+  mat-icon {
+    width: 40px;
+    font-size: 40px;
+    color: red;
+  }
+}
+.notification-item {
+  &:hover {
+    background-color: #f0f8ff54;
+  }
+
+  .content {
+    .time {
+      font-size: 12px;
+      opacity: 0.56;
+    }
+    a {
+      font-weight: 700;
+    }
+  }
+
+  .n-icon .i-icon{
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    margin-left: 5px;
+  }
+
+  &:not(.readed) {
+    background-color: aliceblue;
+  }
+
+  .creator {
+    margin-right: 10px;
+    img {
+      width: 40px;
+      height: 40px;
+      display: block;
+      border-radius: 20px;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .notification-item {
+    .content {
+      a {
+        color: blue;
+        font-weight: 600;
+      }
+      .creator {
+        color: blue;
+      }
+    }
+  }
+}
+
+.table-header {
+  height: unset;
+
+  &.selected {
+    height: 48px;
+    border-bottom: 1px solid gainsboro;
+
+    th {
+      border-bottom: none;
+    }
+  }
+}
+
+.empty-header {
+  height: unset!important;
+}
+
+.icon-cell {
+  width: 60px;
+}
+td.icon-cell {
+  vertical-align: top;
+}
+.select-cell {
+  width: 44px;
+}
+td.select-cell {
+  vertical-align: top;
+}
+.notification-col {
+  font-size: 14px;
+
+  @media screen and (max-width: 400px) {
+    font-size: 12px;
+  }
+}
+td.notification-col {
+  vertical-align: top;
+}
+tr.mat-row {
+  height: 60px;
+}
+td.mat-cell:last-of-type{
+  padding-right: 0px;
+  width: 30px;
+}

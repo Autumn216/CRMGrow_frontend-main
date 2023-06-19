@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CRMGrow</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0 user-scalable=no">
+  <meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0">
+  <meta http-equiv="expires" content="0">
+  <meta http-equiv="pragma" content="no-cache">
+
+  <meta name="description" content="Provides the contact management functionality and material tracking system.">
+  <meta name="author" content="Garrett Team">
+  <meta name="theme-color" content="#1976d2">
+
+  <meta property="og:title", content="CRMGrow">
+  <meta property="og:description", content="Provides the contact management functionality and material tracking system.">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image" content="/assets/img/site_placeholder.jpg">
+
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- Material Default Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpXFRqyNOnrfWwXVnEyJNxOSfhAPjEpv0&libraries=places&language=en"></script>
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+  <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+  <script type="text/javascript">
+    Stripe.setPublishableKey('pk_live_p0mahSVHjPHiknXx0iEEta8400Gn8n3onx');
+    var global = global || window;
+  </script>
+  <script async src='https://r.wdfl.co/rw.js' data-rewardful='88e66d'></script>
+  <!-- <link rel="stylesheet" href="https://widget.meetvolley.com/static/css/widget.css">
+  <script type="text/javascript" data-widget="https://api.meetvolley.com/api/widgets/public/e7bf6dab-e00b-4f62-89a7-a3ed2b9db00f" src="https://widget.meetvolley.com/widget.js"></script> -->
+</head>
+<body class="">
+  <app-root></app-root>
+  <script>
+    window.onUsersnapCXLoad = function(api) {
+      window.UserSnapAPI = api;
+      window.UserSnapLoaded = true;
+    }
+    var script = document.createElement("script");
+    script.defer = 1;
+    script.src = "https://widget.usersnap.com/global/load/d470f663-3eb3-466d-b179-a5afe57ac276?onload=onUsersnapCXLoad";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  </script>
+  <noscript>Please enable JavaScript to continue using this application.</noscript>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<div class="page-content p-0">
+    <div class="form-group mb-4">
+        <h6 class="f-3 font-weight-bold mb-1">Delay time</h6>
+        <label class="f-1 mb-3">
+            How much time do you want to pass before lead capture pops up?
+        </label>
+        <select class="form-control c-blue f-5"
+                [(ngModel)]="garbage.capture_delay"
+                name="delay" id="delay"
+                required #delay="ngModel"
+                (ngModelChange)="chanageDelayTime()"
+        >
+            <option *ngFor="let time of times" value="{{time.id}}">
+              {{time.text}}
+            </option>
+        </select>
+    </div>
+    <div class="form-group">
+        <h6 class="f-3 font-weight-bold mb-1">Required fields</h6>
+        <label class="f-1 mb-3">Informations required from your visitor</label>
+        <div class="v-center required-field mb-2" *ngFor="let field of defaultField">
+            <div class="f-3 field-name">{{field.name}}</div>
+            <div class="custom-control custom-checkbox">
+                <input
+                    type="checkbox"
+                    class="custom-control-input"
+                    id="{{field.name}}"
+                    [(ngModel)]="garbage.capture_field.email"
+                    (ngModelChange)="statusChange($event, 'email')"
+                    *ngIf="field.name == 'Email'"
+                    #emailCheckBox
+                />
+                <input
+                    type="checkbox"
+                    class="custom-control-input"
+                    id="{{field.name}}" 
+                    [checked]="garbage.capture_field.first_name"
+                    (change)="statusChange($event, 'name')"
+                    *ngIf="field.name == 'Name'"
+                />
+                <input
+                    type="checkbox"
+                    class="custom-control-input"
+                    id="{{field.name}}" 
+                    [(ngModel)]="garbage.capture_field.cell_phone"
+                    (ngModelChange)="statusChange($event, 'phone')"
+                    *ngIf="field.name == 'Phone'"
+                    #phoneCheckBox
+                />
+                <label class="custom-control-label" for="{{field.name}}"></label>
+            </div>
+        </div>
+        <div class="v-center required-field mb-2" *ngFor="let field of garbage.additional_fields">
+            <div class="f-3 field-name">{{field.name}}</div>
+            <div class="custom-control custom-checkbox">
+                <input
+                    type="checkbox"
+                    class="custom-control-input"
+                    id="{{field.name}}" 
+                    [checked]="field.status"
+                    (change)="statusChange($event, field.name)"
+                />
+                <label class="custom-control-label" for="{{field.name}}"></label>
+            </div>
+            <div class="v-center">
+                <i class="d-block i-icon i-edit bgc-blue ml-3 c-pointer" (click)="editField(field)"></i>
+                <i class="d-block i-icon i-trash bgc-red ml-3 c-pointer" (click)="deleteField(field)"></i>
+            </div>
+        </div>
+        <button class="v-center btn btn-blue f-3 font-weight-bold text-white mt-3 add-button" (click)="addField()">
+            <i class="i-icon i-plus bg-white d-block mr-2"></i>
+            New custom field
+        </button>
+    </div>
+    <div class="form-group m-0">
+        <div class="f-3 font-weight-bold">Lead capture video</div>
+        <div class="f-1 op-64 mt-2">
+            Add a quick video to entice people to fill out their lead capture information.<br>
+            This will show above the lead capture fields.
+        </div>
+        <div class="v-center mt-3">
+            <button class="btn border border-primary f-6 font-weight-bold c-blue btn-sm py-2" *ngIf="!garbage.intro_video" (click)="browseVideo()" [class.loading]="videoUploader.isUploading">
+                Upload Video
+            </button>
+        </div>
+        <div class="v-center" *ngIf="garbage.intro_video">
+            <div class="video-wrapper mt-1 mb-2">
+                <video #introVideo>
+                    <source [src]="garbage['intro_video']">
+                </video>
+                <div class="play-button" (click)="toggleVideo()"><mat-icon>{{introVideoPlaying ? 'pause' : 'play_arrow'}}</mat-icon></div>
+            </div>
+            <div class="video-action ml-3">
+                <div class="f-3 font-weight-bold">
+                    Your uploaded video
+                </div>
+                <div class="f-3 mt-1" *ngIf="!videoUploader.isUploading; else uploadingTemplate;">
+                    <a class="font-weight-bold c-red c-pointer" (click)="removeVideo()">Remove</a>
+                     or 
+                     <a class="font-weight-bold c-blue c-pointer" (click)="browseVideo()">reupload</a>
+                </div>
+                <ng-template #uploadingTemplate>
+                    <div class="loader video-uploading"></div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>

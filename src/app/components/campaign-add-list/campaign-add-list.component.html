@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>Add list</h1>
+<form #teamForm="ngForm" (ngSubmit)="submitted = true; teamForm.form.valid ? addList() : false"
+      [class.was-validated]="submitted">
+  <mat-dialog-content class="content-section">
+    <ng-container>
+      <div class="my-3 form-group">
+        <label>List name</label>
+        <div clas="contact-input">
+          <input type="text" class="form-control" [(ngModel)]="listName" name="listname" #callSubject="ngModel" required>
+        </div>
+      </div>
+    </ng-container>
+  </mat-dialog-content>
+  <mat-dialog-actions class="justify-content-end mx-0">
+    <button type="button" mat-dialog-close class="btn btn-white f-6 font-weight-bold ml-2">
+      Cancel
+    </button>
+    <button type="submit" class="btn btn-primary font-weight-bold f-6" [class.loading]="creating">
+      Add
+    </button>
+  </mat-dialog-actions>
+</form>

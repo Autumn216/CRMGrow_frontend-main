@@ -1,0 +1,127 @@
+@import 'src/variables.scss';
+
+:host ::ng-deep {
+    mat-dialog-content {
+        max-height: 70vh;
+    }
+    mat-tab-group {
+        .mat-tab-labels {
+            display: flex;
+            justify-content: space-around;
+            .mat-tab-label {
+                opacity: 1;
+                .mat-tab-label-content {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: $color-blue;
+                }
+            }
+        }
+        .mat-ink-bar {
+            background-color: $color-blue !important;
+            height: 4px;
+        }
+        textarea {
+            resize: none;
+        }
+    }
+}
+.material-preivew {
+    position: relative;
+    margin-bottom: 4px;
+    img {
+        width: 160px;
+        height: 90px;
+    }
+    
+    @media screen and (max-width: 440px) {
+        flex-direction: column;
+        text-align: center;
+        img {
+            margin: auto;
+        }
+        & > div {
+            margin-left: 0px!important;
+        }
+    }
+}
+.material-more {
+    display: inline-flex;
+    background: white;
+    box-shadow: 0px 0px 10px #888;
+    font-size: 12px;
+    font-weight: bold;
+    flex-wrap: wrap;
+    border-radius: 12px;
+    
+    i {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+    }
+
+    @media screen and (max-width: 500px) {
+        span.more {
+            display: none;
+        }
+    }
+}
+.text-toolbar {
+    padding: 8px 16px;
+    position: absolute;
+    background: white;
+    top: 1px;
+    left: 1px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    right: 1px;
+    border-bottom: 1px solid #ced4da;
+
+    .insert-template {
+        .dropdown-menu {
+            width: 220px;
+
+            .dropdown-item {
+                height: 48px;
+            }
+        }
+        .emoji-icon {
+            width: 24px;
+        }
+    }
+
+    .insert-token {
+        cursor: pointer;
+        .dropdown-toggle {
+          .i-triangle-up {
+            display: none !important;
+          }
+          .i-icon {
+            width: 8px;
+            height: 8px;
+            min-width: 8px;
+          }
+        }
+        &.show {
+          .dropdown-toggle {
+            .i-triangle-down {
+              display: none !important;
+            }
+            .i-triangle-up {
+              display: block !important;
+            }
+          }
+        }
+        .menu-item:hover {
+            background-color: gainsboro;
+        }
+        .menu-item:active {
+            background-color: blue;
+            color: white;
+        }
+    }
+}
+
+.text-content {
+    padding-top: 42px;
+}

@@ -1,0 +1,80 @@
+@import '../../../variables';
+
+.d-grid {
+  display: grid;
+  grid-gap: 10px;
+}
+
+.btn.disabled {
+  pointer-events: none;
+  opacity: 1;
+}
+
+.affiliate-page {
+  max-width: 700px;
+}
+
+@media screen and (max-width: 576px) {
+  .affiliate-table {
+    th:nth-child(2), td:nth-child(2) {
+      display: none;
+    }
+  }
+
+  .paypal-logo {
+    width: 60px;
+  }
+
+  .paypal-address {
+    margin-left: 4px;
+  }
+}
+
+.cards {
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+
+  .card-item {
+    border: 1px solid $color-blue-weak;
+    max-height: 200px;
+    width: 100%;
+    text-transform: uppercase;
+  }
+
+  .card-value {
+    font-size: 30px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .cards {
+    grid-template-columns: repeat(1, 1fr);
+    width: 100%;
+  }
+}
+
+.status {
+  color: #ffffff;
+  width: 64px;
+  height: 20px;
+  text-align: center;
+  border-radius: 3px;
+  padding: 4px 5px;
+  font-size: 10px;
+
+  &.active {
+    background-color: #00CA7F;
+  }
+
+  &.pending {
+    background-color: #f26419;
+  }
+}
+
+.loading-screen {
+  flex: 1;
+  min-height: 300px;
+  margin-top: 10px;
+  max-width: 1000px;
+  background: transparent;
+}

@@ -1,0 +1,103 @@
+<div class="page-content position-relative">
+    <div class="mb-3">
+        <div class="deals-header v-center">
+            <h1 class="page-title mb-0">
+                Deals
+            </h1>
+            <button class="btn btn-primary font-weight-bold ml-auto shadow" (click)="addNewDeal()">New Deal</button>
+            <a class="btn text-primary border border-primary bg-white font-weight-bold ml-2" [routerLink]="['/settings/deals-setting']">Edit Stages</a>
+        </div>
+    </div>
+
+    <ng-container *ngIf="(dealsService.stages$ | async).length; else emptyListStage">
+        <div class="d-flex stages" cdkDropListGroup>
+            <div class="updating-status" *ngIf="(dealsService.loadingStage$ | async) === STATUS.REQUEST">
+                LOADING
+            </div>
+            <div class="stage" *ngFor="let dealStage of dealsService.stages$ | async">
+                <div class="stage-title bgc-pale p-4">
+                    <div class="f-4 font-weight-bold">
+                        {{dealStage.title}}
+                    </div>
+                    <div class="f-6 font-weight-bold text-primary">
+                        {{dealStage.deals.length}} <span class="f-1 font-weight-bold c-dark op-56 text-uppercase">Deals</span>
+                    </div>
+                    <div class="title-triangle">
+                        <i class="d-block i-icon i-triangle-right bgc-dark"></i>
+                    </div>
+                </div>
+                <div
+                    class="deals-container pt-1 pr-1"
+                    cdkDropList
+                    [cdkDropListData]="dealStage.deals"
+                    (cdkDropListDropped)="drop($event, dealStage._id)"
+                >
+                    <div
+                        class="deal mt-2 mr-2 p-3 c-pointer"
+                        *ngFor="let deal of dealStage.deals" cdkDrag
+                        (click)="dealDetail(deal._id)"
+                    >
+                        <div class="deal-detail position-relative">
+                            <div class="v-center justify-content-between">
+                                <div class="f-6 font-weight-bold">
+                                    {{ deal.title }}
+                                </div>
+                            </div>
+                            <div class="v-center justify-content-between mt-2 contacts-info" *ngIf="deal.contacts.length > 0">
+                                <div class="v-center">
+                                    <div class="v-center justify-content-center avatar fw-600 c-white">{{getAvatarName(deal.contacts[0])}}</div>
+                                    <div class="ml-2 f-3 fw-600">
+                                        {{deal.contacts[0]?.first_name}} {{deal.contacts[0]?.last_name}}
+                                    </div>
+                                </div>
+                                <div class="v-center justify-content-center avatar" *ngIf="deal.contacts.length > 1">
+                                    <div class="c-white">+{{deal.contacts.length - 1}}</div>
+                                </div>
+                            </div>
+                            <div class="f-3 op-64 mt-2" *ngIf="deal.value">
+                                ${{deal.value}}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="v-center justify-content-center add-deal mt-3 mr-3">
+                        <i class="i-icon i-plus d-block bgc-blue c-pointer" (click)="addDeals(dealStage)"></i>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #emptyListStage>
+        <ng-container [ngSwitch]="(dealsService.loadingStage$ | async)">
+            <div class="empty-list" *ngSwitchCase="STATUS.SUCCESS">
+                <div class="object-icon v-center">
+                    <i class="i-icon i-deals d-block bgc-dark"></i>
+                </div>
+                <h4 class="font-weight-bold mt-4 mb-3">
+                    There are no deal stages yet.
+                </h4>
+                <p>Please create new deal stage.</p>
+                <button class="v-center btn btn-blue text-white br-default py-2" (click)="addStages()">
+                    <i class="d-block i-icon i-plus bgc-white"></i>
+                    <span class="f-6 font-weight-bold ml-2">Create new</span>
+                </button>
+            </div>
+            <div class="empty-list" *ngSwitchCase="STATUS.FAILURE">
+                <div class="object-icon v-center">
+                    <i class="i-icon i-deals d-block bgc-dark"></i>
+                </div>
+                <h4 class="font-weight-bold mt-4 mb-3">
+                    There are no deal stages yet.
+                </h4>
+                <p>Please create new deal stage.</p>
+                <button class="v-center btn btn-blue text-white br-default py-2" (click)="addStages()">
+                    <i class="d-block i-icon i-plus bgc-white"></i>
+                    <span class="f-6 font-weight-bold ml-2">Create new</span>
+                </button>
+            </div>
+            <div class="list-loading text-center" *ngSwitchCase="STATUS.REQUEST">
+                <div class="loader mt-5 lg"></div>
+                <h4 class="fw-600 mt-2">Loading deal stages ...</h4>
+            </div>
+        </ng-container>
+    </ng-template>
+</div>

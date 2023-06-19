@@ -1,0 +1,129 @@
+<h1 mat-dialog-title>Contacts merge</h1>
+<mat-dialog-content>
+  <div class="contact-wrapper">
+    <div class="mt-3">
+      <ng-container *ngFor="let column of columns let row = index">
+        <ng-container *ngIf="isCheckable(updateColumn[column]) else selectableColumn">
+          <ng-container *ngIf="!isEmailPhoneColumn(updateColumn[column]) else emailPhoneColumn">
+            <div class="v-center contact-row w-100 my-2" *ngIf="collection[updateColumn[column]]">
+              <div class="contact-header f-3 text-uppercase">{{updateColumn[column]}}</div>
+              <div class="contact-field">
+                <mat-select [(ngModel)]="previewContact[updateColumn[column]]"
+                            [disabled]="collection[updateColumn[column]] && collection[updateColumn[column]].length < 2"
+                            [class.disabled]="collection[updateColumn[column]] && collection[updateColumn[column]].length < 2"
+                >
+                  <mat-option *ngFor="let value of collection[updateColumn[column]]" value="{{value}}">
+                    <div class="f-3 c-black"
+                         [class.selected-option-text]="previewContact[updateColumn[column]] == value">
+                      {{value}}
+                    </div>
+                  </mat-option>
+                </mat-select>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #emailPhoneColumn>
+            <ng-container *ngIf="isEmailColumn(updateColumn[column]) else phoneColumn">
+              <div class="v-center contact-row w-100 my-2" *ngIf="emails.length > 0">
+                <div class="contact-header f-3 text-uppercase">{{updateColumn[column]}}</div>
+                <div class="contact-field">
+                  <mat-select [(ngModel)]="previewContact[updateColumn[column]]"
+                              [disabled]="emails.length < 2"
+                              [class.disabled]="emails.length < 2"
+                  >
+                    <mat-option *ngFor="let value of emails" value="{{value}}">
+                      <div class="f-3 c-black"
+                           [class.selected-option-text]="previewContact[updateColumn[column]] == value">
+                        {{value}}
+                      </div>
+                    </mat-option>
+                  </mat-select>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #phoneColumn>
+              <div class="v-center contact-row w-100 my-2" *ngIf="phones.length > 0">
+                <div class="contact-header f-3 text-uppercase">{{updateColumn[column]}}</div>
+                <div class="contact-field">
+                  <mat-select [(ngModel)]="previewContact[updateColumn[column]]"
+                              [disabled]="phones.length < 2"
+                              [class.disabled]="phones.length < 2"
+                  >
+                    <mat-option *ngFor="let value of phones" value="{{value}}">
+                      <div class="f-3 c-black"
+                           [class.selected-option-text]="previewContact[updateColumn[column]] == value">
+                        {{value}}
+                      </div>
+                    </mat-option>
+                  </mat-select>
+                </div>
+              </div>
+            </ng-template>
+          </ng-template>
+        </ng-container>
+        <ng-template #selectableColumn>
+          <div class="v-center contact-row w-100 my-2" *ngIf="collection[updateColumn[column]] && collection[updateColumn[column]].length">
+            <div class="contact-header f-3 text-uppercase">{{updateColumn[column]}}</div>
+            <div class="contact-field">
+              <mat-select [(ngModel)]="previewContact[updateColumn[column]]" multiple>
+                <mat-option *ngFor="let value of collection[updateColumn[column]]" value="{{value}}">
+                  <div class="f-3 c-black"
+                       [class.selected-option-text]="previewContact[updateColumn[column]] == value">
+                    {{value}}
+                  </div>
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="mergeType() == MERGETYPE.CONTACT">
+        <div class="v-center contact-row w-100 my-2">
+          <div class="contact-header f-3 text-uppercase">Activity</div>
+          <div class="contact-field">
+            <mat-select [(ngModel)]="activity">
+              <mat-option *ngFor="let action of mergeActions" value="{{action}}">
+                <div class="f-3 c-black"
+                     [class.selected-option-text]="activity == action">
+                  {{action}}
+                </div>
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+        <div class="v-center contact-row w-100 my-2">
+          <div class="contact-header f-3 text-uppercase">Follow up</div>
+          <div class="contact-field">
+            <mat-select [(ngModel)]="followup">
+              <mat-option *ngFor="let action of mergeActions" value="{{action}}">
+                <div class="f-3 c-black"
+                     [class.selected-option-text]="followup == action">
+                  {{action}}
+                </div>
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+        <div class="v-center contact-row w-100 my-2">
+          <div class="contact-header f-3 text-uppercase">Automation</div>
+          <div class="contact-field">
+            <mat-select [(ngModel)]="automation">
+              <mat-option *ngFor="let action of automationMergeAction" value="{{action}}">
+                <div class="f-3 c-black"
+                     [class.selected-option-text]="automation == action">
+                  {{action}}
+                </div>
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" class="btn c-blue" mat-dialog-close>Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="mergeCSV()" *ngIf="mergeType() == MERGETYPE.CSV">Merge</button>
+  <button type="button" class="btn btn-primary" (click)="update()" *ngIf="mergeType() == MERGETYPE.CONTACT_CSV" [class.loading]="updating">Update</button>
+  <button type="button" class="btn btn-primary" (click)="mergeContact()" *ngIf="mergeType() == MERGETYPE.CONTACT" [class.loading]="merging">Merge</button>
+</mat-dialog-actions>

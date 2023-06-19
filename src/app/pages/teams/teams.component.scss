@@ -1,0 +1,12 @@
+@import "src/variables";
+
+.teams-tab-container {
+  position: sticky;
+  top: 64px;
+  z-index: 4;
+  background: white;
+}
+
+.team-container {
+  margin-top: -38px;
+}

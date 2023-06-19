@@ -1,0 +1,516 @@
+<div class="page-content">
+  <div class="automation-container">
+    <form #automationForm="ngForm" (ngSubmit)="submitted=true; automationForm.form.valid ? storeData() : false;"
+          [class.was-validated]="submitted">
+      <div class="v-center op-56 c-pointer mb-3" (click)="goToBack()">
+        <i class="d-block i-icon i-triangle-left bgc-dark mr-2 sm"></i>
+        <span class="f-5 font-weight-bold">Back {{getPrevPage()}}</span>
+      </div>
+      <div class="align-items-top automation-name-wrapper">
+        <div class="row align-items-center">
+          <div class="col-md-6 col-sm-12 col-12">
+            <div class="form-group d-flex align-items-end">
+              <div class="title w-100">
+                <div class="v-center justify-content-between">
+                  <label for="automation-title">Title</label>
+                  <span class="error f-3 font-weight-bold"
+                        *ngIf="automation_title == '' && submitted">
+                  Required!
+                </span>
+                </div>
+                <input class="form-control"
+                   id="automation-title"
+                   [(ngModel)]="automation_title" type="text"
+                   name="automationTitle"
+                   #automationTitle="ngModel"
+                   placeholder="Type in new automation title"
+                   required
+                >
+
+              </div>
+              <div class="btn-wrapper ml-2" [class.disable]="!isPackageAutomation">
+                <button class="btn btn-primary br-default" [class.loading]="isSaving" type="submit">
+                  {{this.editMode ? 'Save' : 'Create'}}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-6">
+            <div class="form-group v-center justify-content-sm-end justify-content-start">
+              <div class="auth">
+                <label>Owner</label>
+                <div class="h-40 v-center">
+                  <ng-container *ngIf="automation; else newAutomation">
+                    <ng-container *ngIf="editMode == 'edit'; else newAutomation">
+                      <div class="role" [class.admin]="automation.role == 'admin'" [class.team]="automation.role === 'team' && automation.user === user_id" [class.shared]="automation.role === 'team' && automation.user !== user_id"></div>
+                    </ng-container>
+                  </ng-container>
+                  <ng-template #newAutomation>
+                    <div class="role own"></div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="created ml-4" align="end">
+                <label>Created</label>
+                <div class="h-40 v-center">
+                  <div class="f-3 font-weight-bold">
+                    {{created_at | date: 'MM/dd/yyyy'}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-6" *ngIf="automation && editMode == 'edit'">
+            <div class="v-center justify-content-end">
+              <button type="button" class="btn btn-primary shadow"
+                (click)="assignContacts()">
+                <span class="font-weight-bold f-3">Assign</span>
+              </button>
+              <ng-container *ngIf="(auth == 'admin' || auth == 'shared'); else moreTemplate">
+              </ng-container>
+              <ng-template #moreTemplate>
+                <div ngbDropdown class="d-flex p-2 button-more py-2 rounded">
+                  <button type="button" class="v-center btn btn-white-blue py-2" ngbDropdownToggle>
+                    <span class="font-weight-bold f-3 c-blue">More</span>
+                  </button>
+                  <div ngbDropdownMenu class="light">
+                    <button type="button"
+                      class="v-center border-0 py-2 c-dark dropdown-item"
+                      [class.disable]="!isPackageAutomation"
+                      (click)="duplicate($event, automation)"
+                    >
+                      <span class="f-3 font-weight-bold">Clone</span>
+                    </button>
+                    <button type="button" class="v-center border-0 py-2 c-dark dropdown-item"
+                            (click)="shareAutomation($event, automation)"
+                            *ngIf="automation.user == user_id"
+                    >
+                      <span class="f-3 font-weight-bold">Share team</span>
+                    </button>
+                    <hr class="my-1">
+                    <button type="button"
+                      class="v-center border-0 py-2 c-dark dropdown-item"
+                      [class.disable]="!isPackageAutomation"
+                      (click)="delete()"
+                    >
+                      <span class="c-red f-3 font-weight-bold">Delete automation</span>
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <app-slide-tab [tabs]="tabs" [selected]="selectedTab" type="plain" (onChange)="changeTab($event)" class="border-bottom pl-0 rounded-0">
+    </app-slide-tab>
+    <div class="card-body activity mt-3" [class.d-none]="selectedTab.id !== 'activity'">
+      <button class="d-none" (click)="clearAllNodes()">Clear</button>
+      <!-- <div class="" draggable="true" (dragstart)="dragAction($event)">DRAG</div> -->
+      <div class="flows-container" #wrapper>
+        <div class="zoom-button-wrapper">
+          <button class="v-center justify-content-center btn btn-white font-weight-bold mb-2" [class.disabled]="zoomLevel > 3" (click)="zoomIn()">
+            <i class="bgc-blue i-icon i-plus"></i>
+          </button>
+          <button class="v-center justify-content-center btn btn-white font-weight-bold" [class.disabled]="zoomLevel === 0" (click)="zoomOut()">
+            <i class="bgc-blue i-icon i-remove"></i>
+          </button>
+        </div>
+        <div class="count-container" *ngIf="automation">
+          <div class="actions-count">
+            <label class="f-1 text-uppercase">Actions</label>
+            <div class="content actions">
+              <p class="count font-weight-bold">{{automation && automation.automations && automation.automations.length ? automation.automations.length : 0}}</p>
+            </div>
+          </div>
+          <div class="contacts-count mt-3" *ngIf="editMode == 'edit'">
+            <label class="f-1 text-uppercase">Contacts</label>
+            <div class="content contacts">
+              <p class="count font-weight-bold">{{contacts || '0'}}</p>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="!nodes.length; else flowTemplate">
+          <div class="init-graph-container">
+            <ngx-graph class="chart-container init-container" [links]="initEdges" [nodes]="initNodes"
+                       [layoutSettings]="layoutSettings" [layout]="layout" [curve]="curve" [draggingEnabled]="false"
+                       [autoCenter]="false" [autoZoom]="autoZoom" [zoomLevel]="zoomLevel" [enableZoom]="true" [panOffsetY]="0"
+                       [view]="[300, 200]">
+              <ng-template #nodeTemplate let-node>
+                <svg:g class="node">
+                  <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height"
+                            fill="transparent" />
+                  <svg:foreignObject width="200" height="132">
+                    <xhtml:div xmlns="http://www.w3.org/1999/xhtml" (click)="addAction()" (drop)="startDrop($event)"
+                               (dragover)="allowStartDrop($event, node)" (dragleave)="disableStartArea($event, node)"
+                               (dragenter)="enableStartArea($event, node)" [class.droppable]="node.droppable"
+                               class="drop-target">
+                      <xhtml:div class="cardContainer" style="margin-bottom: 5px; margin-top: 10px; text-align: center;"
+                                 xmlns="http://www.w3.org/1999/xhtml">
+                        <img [attr.src]="'./assets/img/automations/automation_start.svg'" x="75" y="0" height="50px"
+                             width="50px" />
+                      </xhtml:div>
+                      <xhtml:div class="cardContainer"
+                                 style="background-color: transparent; padding: 5px 8px; text-align: center; width: 150px; margin-left: 25px; margin-right: 25px;"
+                                 xmlns="http://www.w3.org/1999/xhtml">
+                        <label class="name" style="margin: 0; font-size: 13px;">Start</label>
+                        <label class="name" style="margin: 0; font-size: 10px; color: #aaa;">
+                          DRAG'N'DROP ACTION OR CLICK HERE
+                        </label>
+                      </xhtml:div>
+                    </xhtml:div>
+                  </svg:foreignObject>
+                </svg:g>
+              </ng-template>
+            </ngx-graph>
+          </div>
+        </ng-container>
+
+        <ng-template #flowTemplate>
+          <ngx-graph class="chart-container" [links]="edges" [nodes]="nodes" [layoutSettings]="layoutSettings"
+                     [autoCenter]="true" [layout]="layout" [curve]="curve" [center$]="center$" [draggingEnabled]="false"
+                     [autoZoom]="autoZoom" [zoomLevel]="zoomLevel" [enableZoom]="true" #graphWrapper>
+            <ng-template #defsTemplate>
+              <svg:marker id="arrow" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="8" markerHeight="8"
+                          orient="auto">
+                <circle cx="10" cy="10" r="10" stroke="green" stroke-width="0" fill="gray" />
+              </svg:marker>
+              <svg:pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                <svg:path d="M-1,1 l2,-2
+                       M0,4 l4,-4
+                       M3,5 l2,-2" style="stroke:#eee; stroke-width:1" />
+              </svg:pattern>
+            </ng-template>
+
+            <ng-template #nodeTemplate let-node>
+              <svg:g class="node" *ngIf="node.category === 'NORMAL'">
+                <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.leaf ? 200 : 110"
+                          fill="transparent" />
+                <svg:foreignObject width="200" [attr.height]="node.leaf ? 200 : 110">
+                  <xhtml:div class="cardContainer c-pointer"
+                             #treeNode
+                             (click)="easyView($event, node, treeNode, treeOverlay)"
+                             style="text-align: center;"
+                             xmlns="http://www.w3.org/1999/xhtml">
+                    <img [attr.src]="ICONS[node.type]" x="75" y="0" height="50px" width="50px" />
+                  </xhtml:div>
+                  <xhtml:div class="cardContainer"
+                             style="background-color: transparent; padding: 5px 8px 20px 8px; margin-bottom: 15px; text-align: center;"
+                             xmlns="http://www.w3.org/1999/xhtml">
+                    <label class="name" style="margin: 0; font-size: 14px; font-weight: bold;">{{node.label}}</label>
+                    <label class="name" style="margin: 0; font-size: 11px; color: #f28422; display: block;">{{node.period | duration}}</label>
+                  </xhtml:div>
+                  <ng-container *ngIf="node.leaf">
+                    <xhtml:div
+                      style="background-color: transparent; border-left: 2px dashed #aaa; width: 2px; height: 30px; margin-top: -15px; margin-left: auto; margin-right: auto;"
+                      xmlns="http://www.w3.org/1999/xhtml">
+                    </xhtml:div>
+                    <xhtml:div class="cardContainer" (click)="addAction(node)"
+                               style="margin-bottom: 5px; margin-top: 5px; text-align: center;"
+                               xmlns="http://www.w3.org/1999/xhtml">
+                      <img [attr.src]="'./assets/img/automations/automation_start.svg'" x="75" y="0" height="48px"
+                           width="48px" />
+                    </xhtml:div>
+                  </ng-container>
+                </svg:foreignObject>
+              </svg:g>
+              <svg:g class="node" *ngIf="node.category === 'CONDITION'">
+                <svg:rect [attr.width]="node.dimension.width" [attr.height]="40"
+                          fill="transparent" />
+                <svg:foreignObject width="140" [attr.height]="40" style="overflow: visible">
+                  <xhtml:div [class.trueCase]="node.condition.answer" [class.falseCase]="!node.condition.answer"
+                             xmlns="http://www.w3.org/1999/xhtml">
+                    <label class="name" style="margin: 0; font-size: 12px; font-weight: bold;">{{node.label}}</label>
+                  </xhtml:div>
+                  <ng-container *ngIf="node.leaf">
+                    <xhtml:div
+                      style="background-color: transparent; border-left: 2px dashed #aaa; width: 2px; height: 30px; margin-top: -15px; margin-left: auto; margin-right: auto;"
+                      xmlns="http://www.w3.org/1999/xhtml">
+                    </xhtml:div>
+                    <xhtml:div class="cardContainer" (click)="addAction(node)"
+                               style="margin-bottom: 5px; margin-top: 5px; text-align: center;"
+                               xmlns="http://www.w3.org/1999/xhtml">
+                      <img [attr.src]="'./assets/img/automations/automation_start.svg'" x="75" y="0" height="48px"
+                           width="48px" />
+                    </xhtml:div>
+                  </ng-container>
+                </svg:foreignObject>
+              </svg:g>
+            </ng-template>
+            <ng-template #linkTemplate let-link>
+              <svg:g class="edge">
+                <svg:path class="line" stroke="#aaa" stroke-width="1" marker-start="url(#arrow)">
+                </svg:path>
+              </svg:g>
+              <svg:g class="linkMidpoint" *ngIf="link.midPoint && !link.category"
+                     [attr.transform]="'translate(' + (link.midPoint.x) + ',' + (link.midPoint.y) + ')'"
+                     (click)="insertAction(link)">
+                <ellipse rx="10" ry="10" fill='white' stroke='black' strokeWidth='2' />
+                <svg:foreignObject width="20" height="20" x="-10" y="-10">
+                  <xhtml:div xmlns="http://www.w3.org/1999/xhtml" style="height: 20px; text-align: center;">
+                    <label style="margin: 0; font-size: 24px; line-height: 18px;">+</label>
+                  </xhtml:div>
+                </svg:foreignObject>
+              </svg:g>
+              <svg:g class="label" *ngIf="link.hasLabel && link.points && link.points[0]" [attr.transform]="'translate(' + (link.points[0].x - 40) + ',' + (link.points[0].y + 40) + ')'">
+                <svg:rect [attr.width]="90" [attr.height]="60"
+                          fill="transparent" />
+                <svg:foreignObject width="90" [attr.height]="60">
+                  <xhtml:div class="caseLabel"
+                             style="position: initial; background-color: transparent; text-align: center;"
+                             xmlns="http://www.w3.org/1999/xhtml">
+                    <label class="name" style="margin-top: 20px; margin-bottom: 0px; font-size: 14px;">{{CASE_ACTIONS[link.type]}}</label>
+                    <label class="remove-link" (click)="removeCase(link)">&times;</label>
+                  </xhtml:div>
+                </svg:foreignObject>
+              </svg:g>
+            </ng-template>
+          </ngx-graph>
+        </ng-template>
+        <ng-template #treeOverlay let-close="close" let-data>
+          <app-automation-detail-overlay
+              [dataSource]="data.data"
+          >
+          </app-automation-detail-overlay>
+        </ng-template>
+        <!--  -->
+      </div>
+    </div>
+    <div class="card-body contact mt-2" [class.d-none]="selectedTab.id !== 'contacts'">
+      <div class="form-group mt-3 mb-0 search-form">
+        <div class="input-group-prepend">
+          <i class="i-icon i-search d-block bgc-dark"></i>
+        </div>
+        <input type="text" class="form-control" placeholder="Search" aria-label="search" aria-describedby="search-addon" [(ngModel)]="searchStr" (ngModelChange)="changeSearchStr()">
+        <ng-container *ngIf="searchStr">
+          <div class="cancel-action c-pointer" (click)="clearSearchStr()">
+            <i class="i-icon i-close d-block bgc-dark"></i>
+          </div>
+        </ng-container>
+      </div>
+      <div class="custom-mat-table position-relative mt-3">
+        <div class="mat-table-wrapper mode-2">
+          <table class="w-100 page-table"
+            mat-table
+            [dataSource]="pageContacts | paginate: {id: 'contactPages', itemsPerPage: pageSize.id, currentPage: page, totalItems: contacts}">
+
+            <ng-container matColumnDef="loader-cell">
+              <th mat-header-cell
+                *matHeaderCellDef colspan="12" class="loader-cell">
+                <div class="updating-status"
+                *ngIf="pageContacts.length && assignedContactLoading">
+                  LOADING
+                </div>
+              </th>
+            </ng-container>
+
+            <ng-container matColumnDef="select">
+              <th mat-header-cell
+                *matHeaderCellDef
+                class="pl-2">
+                <div class="custom-control custom-checkbox"
+                  [class.indeterminate]="pageContacts.length && !isAllSelected()">
+                  <input type="checkbox"
+                    class="custom-control-input"
+                    id="selectAllContacts"
+                    (change)="$event ? masterToggle() : null"
+                    [checked]="pageContacts.length && isAllSelected()" />
+                  <label class="custom-control-label"
+                    for="selectAllContacts"></label>
+                </div>
+              </th>
+              <td mat-cell
+                *matCellDef="let element"
+                class="pl-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox"
+                    class="custom-control-input"
+                    id="contact-{{element._id}}"
+                    (change)="toggle(element)"
+                    [checked]="isSelected(element)" />
+                  <label class="custom-control-label"
+                    for="contact-{{element._id}}"></label>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="contact_name">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell
+                *ngIf="!selection.length; else toolHeader"> contact name </th>
+                  <ng-template #toolHeader>
+                    <th mat-header-cell colspan="7">
+                      <div class="v-center">
+                        <span class="c-dark f-3 text-lowercase font-weight-bold">{{selection.length}} selected</span>
+                        <app-actions-header [actions]="CONTACT_ACTIONS" [disableActions]="disableActions" (doCommand)="doAction($event)"></app-actions-header>
+                      </div>
+                    </th>
+                  </ng-template>
+              </ng-container>
+              <td mat-cell
+                *matCellDef="let element"
+                (click)="openContact(element)">
+                <div class="v-center c-pointer">
+                  <div class="contact-avatar f-3 mr-2">{{element.avatarName}}</div>
+                  <span class="fw-600">{{element.fullName}}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Label Column -->
+            <ng-container matColumnDef="contact_label">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell
+                *ngIf="!selection.length">label</th>
+              </ng-container>
+              <td mat-cell
+                *matCellDef="let element">
+                <app-label-select [value]="element.label" (valueChange)="updateLabel($event, element._id)"></app-label-select>
+              </td>
+            </ng-container>
+
+            <!-- Tags Column -->
+            <ng-container matColumnDef="contact_tags">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell
+                  *ngIf="!selection.length"> tags </th>
+              </ng-container>
+              <td mat-cell
+                *matCellDef="let element"
+                (click)="openContact(element)">
+                <span class="tag rounded mr-2"
+                  *ngIf="element.tags.length">{{element.tags[0]}}</span>
+                <span class="f-2 op-56">{{element.moreTag}}</span>
+              </td>
+            </ng-container>
+
+            <!-- Email Column -->
+            <ng-container matColumnDef="contact_email">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell
+                  *ngIf="!selection.length"> email address  </th>
+              </ng-container>
+              <td mat-cell
+                *matCellDef="let element"
+                (click)="openContact(element)">
+                <span class="">{{element.email}}</span>
+              </td>
+            </ng-container>
+
+            <!-- Phone Column -->
+            <ng-container matColumnDef="contact_phone">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell
+                  *ngIf="!selection.length"> phone number </th>
+              </ng-container>
+              <td mat-cell
+                *matCellDef="let element"
+                (click)="openContact(element)">
+                <span class="c-blue font-weight-bold">{{element.cell_phone | phone_format}}</span>
+              </td>
+            </ng-container>
+
+            <!-- Country Column -->
+            <ng-container matColumnDef="contact_address">
+              <ng-container *matHeaderCellDef>
+                <th mat-header-cell class="address-col" *ngIf="!selection.length">Address</th>
+              </ng-container>
+              <td mat-cell
+                  *matCellDef="let element" class="address-col">
+                <a class="c-pointer undecoration c-dark d-block" [routerLink]="['/contacts/' + element._id]">
+                  <span class="c-dark">{{element.shortAddress}}</span>
+                </a>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="selection_info">
+              <th mat-header-cell *matHeaderCellDef colspan="8" class="text-center">
+                <span *ngIf="selection.length !== contacts; else deselectTemplate">
+                  {{selection.length}} contacts are selected.
+                  <span  class="c-blue font-weight-bold" *ngIf="selecting && selectSource === 'page'">
+                    <i class="small-spinner"></i>
+                    <span class="ml-1">Selecting all. . .</span>
+                  </span>
+                  <span class="c-blue font-weight-bold c-pointer" *ngIf="!selecting" (click)="selectAll()">
+                    Select all {{contacts}} contacts
+                  </span>
+                </span>
+                <ng-template #deselectTemplate>
+                  All {{contacts}} contacts are selected. <span class="c-blue c-pointer font-weight-bold" (click)="deselectAll()">Clear selection</span>
+                </ng-template>
+              </th>
+            </ng-container>
+
+            <tr mat-header-row
+              *matHeaderRowDef="['loader-cell']" class="loader-row"></tr>
+            <tr mat-header-row
+              *matHeaderRowDef="DISPLAY_COLUMNS" [class.selected]="selection.length" class="table-header"></tr>
+            <tr mat-header-row *matHeaderRowDef="['selection_info']" [class.d-none]="!selection.length" class='selection-info'></tr>
+            <tr mat-row
+              *matRowDef="let row; columns: DISPLAY_COLUMNS;"></tr>
+          </table>
+        </div>
+        <ng-container *ngIf="pageContacts.length; else emptyListTemplate">
+          <div class="table-control mode-1">
+            <div class="pagination-wrapper m-auto">
+              <pagination-controls (pageChange)="changePage($event)"
+                (pageBoundsCorrection)="pageChanged($event)"
+                id="contactPages"
+                maxSize="5"
+                previousLabel=""
+                nextLabel="">
+              </pagination-controls>
+            </div>
+            <div class="shadow-dropdown ml-auto page-size-control"
+              ngbDropdown
+              placement="top-right">
+              <div class="v-center c-pointer f-3 p-3 font-weight-bold"
+                ngbDropdownToggle>
+                <span class="pr-2 c-blue">Show {{pageSize.id}} rows per page</span>
+              </div>
+              <div ngbDropdownMenu
+                aria-labelledby="contactPageSize">
+                <div class="py-2"
+                  ngbDropdownItem
+                  *ngFor="let type of PAGE_COUNTS"
+                  (click)="changePageSize(type)">
+                  <span class="f-3 v-center"
+                    [class.font-weight-bold]="type.id === pageSize.id">
+                    Show {{type.label}} rows per page
+                    <i class="i-icon i-check d-block bgc-blue sm ml-1 mb-1"
+                      *ngIf="type.id === pageSize.id"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #emptyListTemplate>
+          <ng-container>
+            <div class="empty-list py-5" *ngIf="!assignedContactLoading">
+              <div class="object-icon v-center">
+                <i class="i-icon i-lunch d-block bgc-dark"></i>
+              </div>
+              <h4 class="font-weight-bold mt-4 mb-3">
+                There is no assigned contacts.
+              </h4>
+            </div>
+            <div class="list-loading text-center" *ngIf="assignedContactLoading">
+              <div class="loader mt-5 lg"></div>
+              <h4 class="fw-600 mt-2">Loading assigned contacts in this automation...</h4>
+            </div>
+          </ng-container>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+<mat-drawer-container [hasBackdrop]="true">
+  <mat-drawer #drawer
+    position="end" (openedChange)="setPanelType($event)">
+    <app-advanced-filter [hidden]="panelType" (onClose)="drawer.close()" #filterPanel></app-advanced-filter>
+    <app-contact-bulk [hidden]="panelType !== 'editor'" (onClose)="drawer.close()" [contacts]="selection" #editPanel></app-contact-bulk>
+  </mat-drawer>
+</mat-drawer-container>

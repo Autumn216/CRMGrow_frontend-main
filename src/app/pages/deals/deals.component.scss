@@ -1,0 +1,131 @@
+@import 'src/variables.scss';
+
+.page-content {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+
+    .deals-header {
+        position: sticky;
+        left: 192px;
+        width: calc(100vw - 240px);
+
+        @media screen and (max-width: 992px) {
+            left: 60px;
+            width: calc(100vw - 108px);
+        }
+
+        @media screen and (max-width: 680px) {
+            left: 16px;
+            width: calc(100vw - 47px);
+        }
+    }
+}
+
+.stages {
+    flex-wrap: nowrap;
+    width: fit-content;
+    .stage {
+        width: 240px;
+        min-width: 240px;
+        .stage-title {
+            position: relative;
+            border: 1px solid #D9D9DF;
+            height: 100px;
+            .title-triangle {
+                position: absolute;
+                top: 45px;
+                left: -3px;
+                i {
+                    width: 10px;
+                    height: 10px;
+                    min-width: 10px;
+                }
+            }
+            .action-more {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+            }
+        }
+        &:first-child {
+            .stage-title {
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+        }
+        &:last-child {
+            .stage-title {
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+            }
+        }
+        .deals-container {
+            height: 700px;
+            .deal {
+                border: 1px solid #D9D9DF;
+                border-radius: 5px;
+                box-shadow: 5px 5px 20px 1px rgba(0,0,0,0.05);
+                .avatar {
+                    width: 20px;
+                    min-width: 20px;
+                    height: 20px;
+                    font-size: 10px!important;
+                    line-height: 20px;
+                    border-radius: 50%;
+                    background-color: $color-dark;
+                }
+                .contacts-info {
+                    i {
+                        width: 8px;
+                        height: 8px;
+                        min-width: 8px;
+                    }
+                }
+            }
+        }
+    }
+    .add-stage {
+        border-radius: 5px;
+        border: 1px solid #0000FF;
+        height: 100px;
+    }
+}
+.cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 5px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    background: $color-white;
+    border: 1px solid #D9D9DF;
+    
+    .avatar {
+        width: 20px;
+        min-width: 20px;
+        height: 20px;
+        font-size: 10px!important;
+        line-height: 20px;
+        border-radius: 50%;
+        background-color: $color-dark;
+    }
+    .contacts-info {
+        i {
+            width: 8px;
+            height: 8px;
+            min-width: 8px;
+        }
+    }
+}
+
+.cdk-drag-placeholder {
+    opacity: 0;
+}
+
+.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.deals-container.cdk-drop-list-dragging .deal:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

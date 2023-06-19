@@ -1,0 +1,82 @@
+<div class="page-content p-0">
+    <div class="v-center justify-content-between mb-3">
+        <h6 class="f-3 font-weight-bold mb-0">Tag Manager</h6>
+    </div>
+    <div class="table">
+        <div class="v-center pt-3 pb-2 table-header">
+            <div class="f-1 tag-col">
+                tag name
+            </div>
+            <div class="f-1 time-col">
+                contacts
+            </div>
+            <div class="f-1 action-col text-right px-1">
+            </div>
+        </div>
+        <div class="table-body">
+            <ng-container *ngIf="tags.length; else noTags">
+                <div *ngFor="let tag of tags">
+                    <mat-accordion>
+                        <mat-expansion-panel hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <div class="v-center tag-col">
+                                        <div class="v-center justify-content-center status-icon">
+                                            <i class="i-icon i-arrow-down bgc-dark"></i>
+                                            <i class="i-icon i-arrow-up bgc-dark"></i>
+                                        </div>
+                                        <div class="f-3 bgc-pale px-2 py-1 tag-label">{{tag._id}}</div>
+                                    </div>
+                                    <div class="f-3 c-dark my-auto time-col">
+                                        {{tag.count}}
+                                    </div>
+                                    <div ngbDropdown placement="bottom-right" class="ml-auto my-auto action-col">
+                                        <a ngbDropdownToggle class="v-center justify-content-end btn c-dark f-3 no-carot py-0 pl-0 pr-2">
+                                            <i class="d-block i-icon i-menu-more bgc-dark"></i>
+                                        </a>
+                                        <div ngbDropdownMenu class="light">
+                                            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="editTag(tag)">
+                                                <i class="d-block i-icon i-edit bgc-dark mr-2" aria-hidden="true"></i>
+                                                <span class="f-3 font-weight-bold">Edit</span>
+                                            </button>
+                                            <button class="v-center border-0 py-2 c-dark dropdown-item" (click)="deleteTag(tag)">
+                                                <i class="d-block i-icon i-trash bgc-red mr-2" aria-hidden="true"></i>
+                                                <span class="f-3 font-weight-bold">Delete</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="v-center justify-content-between contact" *ngFor="let contact of tag.contacts">
+                                <a class="v-center py-2 avatar-wrapper" [routerLink]="['/contacts/' + contact._id]">
+                                    <div class="v-center justify-content-center f-0 text-white avatar">
+                                        {{contact.avatarName}}
+                                    </div>
+                                    <div class="f-3 text-primary name">
+                                        {{contact.fullName}}
+                                    </div>
+                                </a>
+                                <i class="d-block i-icon i-close bgc-dark c-pointer" (click)="deleteContactTag(tag, contact)"></i>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </div>
+            </ng-container>
+            <ng-template #noTags>
+                <ng-container *ngIf="loading; else emptyResult">
+                    <div class="list-loading text-center">
+                        <div class="loader mt-5 lg"></div>
+                        <h4 class="fw-600 mt-2">Loading tags...</h4>
+                    </div>
+                </ng-container>
+                <ng-template #emptyResult>
+                    <div class="empty-list py-5">
+                        <h4 class="font-weight-bold mt-4 mb-3">
+                            There is no tags.
+                        </h4>
+                    </div>
+                </ng-template>
+            </ng-template>
+        </div>
+    </div>
+</div>

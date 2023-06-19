@@ -1,0 +1,10 @@
+.search-page {
+  position: fixed;
+  top: 63px;
+  left: 160px;
+  width: calc(100% - 160px);
+  height: calc(100% - 63px);
+  background: white;
+  z-index: 995;
+  overflow: auto;
+}
